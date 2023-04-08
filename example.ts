@@ -3,6 +3,7 @@ import { fs as fsDriver } from "./src/storage/drivers/fs";
 
 (async function main() {
   const client = new NodeClient({
+    appId: 'my-app',
     storage: {
       driver: fsDriver(process.cwd() + '/tmp'),
     }
@@ -16,8 +17,6 @@ import { fs as fsDriver } from "./src/storage/drivers/fs";
     console.log('nid2:', node2.nid);
   
     await node.add('foo', node2);
-  
-    client.graph.debug();
   
   } catch (error) {
     const _err = error as Error;

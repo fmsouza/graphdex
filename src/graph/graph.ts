@@ -39,8 +39,4 @@ export class Graph {
     await newNode.update();
     return newNode;
   }
-
-  public debug(): void {
-    console.log(this);
-  }
 }

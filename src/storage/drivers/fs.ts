@@ -33,6 +33,6 @@ class FileStorageDriver implements StorageDriver {
   }
 }
 
-export function fs(path: string): StorageDriver {
-  return new FileStorageDriver(path);
+export function fs(datapath: string): StorageDriver {
+  return new FileStorageDriver(datapath);
 }

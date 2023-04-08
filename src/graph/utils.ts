@@ -14,11 +14,11 @@ export function serializeNode(node: Node<any>): string {
   });
 }
 
-function serializeEdges(edges: Map<string, Node<any>>): Array<{ label: string, nid: string }> {
+function serializeEdges(edges: Map<string, Node<any>>): { label: string, nid: string }[] {
   return Array.from(edges.entries()).map((edge: [label: string, node: Node<any>]) => {
     const [label, node] = edge;
     return {
-      label: label,
+      label,
       nid: node.nid,
     };
   });
@@ -31,7 +31,7 @@ export function deserializeNode<T>(serialized: string, emitter: Emitter): Node<T
   return new Node<T>({nid, payload, createdAt, edges, emitter});
 }
 
-function deserializeEdges(serializedEdges: Array<{ label: string, nid: string }>, emitter: Emitter): Map<string, Node<any>> {
+function deserializeEdges(serializedEdges: { label: string, nid: string }[], emitter: Emitter): Map<string, Node<any>> {
   const edges = new Map<string, Node<any>>();
 
   serializedEdges.forEach((edge) => {
@@ -50,8 +50,8 @@ export async function findNode<NodeValueType>(nid: string, emitter: Emitter): Pr
           resolve(node);
         }
       })
-      .once(GraphEvents.NODE_NOT_FOUND, (nid: string) => {
-        reject(new NodeNotFoundError(nid));
+      .once(GraphEvents.NODE_NOT_FOUND, (id: string) => {
+        reject(new NodeNotFoundError(id));
       })
       .emit(GraphEvents.NODE_LOAD, nid);
   });

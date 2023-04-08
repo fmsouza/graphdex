@@ -9,8 +9,8 @@ interface NodeClientOptions {
 
 export class NodeClient {
   private static _instance: NodeClient;
-  private _graph: Graph;
-  private _storage: Storage;
+  private _graph!: Graph;
+  private _storage!: Storage;
   private _emitter: Emitter = new Emitter();
   
   
@@ -27,7 +27,7 @@ export class NodeClient {
   }
 
   public constructor(options?: NodeClientOptions) {
-    if (NodeClient._instance) NodeClient._instance;
+    if (NodeClient._instance) return NodeClient._instance;
 
     const defaultOps = {
       emitter: this._emitter,

@@ -1,5 +1,6 @@
 import { Emitter } from "../emitter";
-import { Maybe } from "../utils";
+import { Maybe } from "../types";
+
 import { NodeNotFoundError } from "./errors";
 import { GraphEvents } from "./events";
 import { Node } from "./node";

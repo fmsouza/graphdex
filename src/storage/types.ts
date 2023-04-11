@@ -1,5 +1,5 @@
 import { Emitter } from "../emitter";
-import { Maybe } from "../utils";
+import { Maybe } from "../types";
 
 export interface StorageDriver {
   save(nid: string, payload: any): Promise<void>;

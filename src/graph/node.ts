@@ -1,7 +1,7 @@
 import { Emitter } from "../emitter";
-import { generateHash, Maybe } from "../utils";
+import { generateHash } from "../utils";
+import { Maybe } from "../types";
 
-import { NodeNotFoundError } from './errors';
 import { GraphEvents } from "./events";
 import { deserializeNode, findNode, serializeNode } from "./utils";
 

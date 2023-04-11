@@ -1,8 +1,9 @@
 import { createHash } from "crypto";
 
-export function generateHash(data: any, algorithm: string = "sha1"): string {
-  if (typeof data !== "string") data = JSON.stringify(data);
-  const dataHash = createHash(algorithm);
-  dataHash.update(data);
+export function generateHash(input: {data: any, algorithm?: string}): string {
+  const { data, algorithm } = input;
+  const contents = (typeof data !== "string") ? JSON.stringify(data) : data;
+  const dataHash = createHash(algorithm ?? "sha1");
+  dataHash.update(contents);
   return dataHash.digest("hex");
 }

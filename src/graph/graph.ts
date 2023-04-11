@@ -16,10 +16,16 @@ export class Graph {
   }
 
   public async createNode<NodeValueType>(data: NodeValueType): Promise<Node<NodeValueType>> {
-    const node = Node.create(data, this._emitter);
+    const node = Node.create({
+      payload: data,
+      emitter: this._emitter,
+    });
 
     this._store.set(node.nid, node);
-    this._emitter.emit(GraphEvents.NODE_CREATED, node);
+    this._emitter.emit({
+      event: GraphEvents.NODE_CREATED,
+      payload: {node}
+    });
 
     return node;
   }
@@ -31,7 +37,10 @@ export class Graph {
       return node as Node<NodeValueType>;
     }
 
-    const newNode = await Node.find<NodeValueType>(nid, this._emitter);
+    const newNode = await Node.find<NodeValueType>({
+      nid,
+      emitter: this._emitter
+    });
     if (!newNode) {
       throw new NodeNotFoundError(nid);
     }

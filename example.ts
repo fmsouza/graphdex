@@ -16,7 +16,10 @@ import { fs as fsDriver } from "./src/storage/drivers/fs";
     const node2 = await client.graph.createNode("bar");
     console.log('nid2:', node2.nid);
   
-    await node.add('foo', node2);
+    await node.add({
+      label: 'foo',
+      node: node2
+    });
   
   } catch (error) {
     const _err = error as Error;

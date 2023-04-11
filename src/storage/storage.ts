@@ -22,18 +22,29 @@ export class Storage {
       .on(GraphEvents.NODE_LOAD, this.load.bind(this));
   }
 
-  private async save<NodeValueType>(node: Node<NodeValueType>): Promise<void> {
+  private async save<NodeValueType>(payload: {node: Node<NodeValueType>}): Promise<void> {
+    const {node} = payload;
     const serialized = node.serialize();
     await this._driver.save(node.nid, serialized);
   }
 
-  public async load<NodeValueType>(nid: string): Promise<void> {
+  public async load<NodeValueType>(payload: {nid: string}): Promise<void> {
+    const {nid} = payload;
     const serialized = await this._driver.get(nid);
-    const deserialized = serialized ? Node.deserialize<NodeValueType>(serialized, this._emitter) : null;
-    if (deserialized) {
-      this._emitter.emit(GraphEvents.NODE_LOADED, deserialized);
+    const node = !serialized ? null : Node.deserialize<NodeValueType>({
+      serialized,
+      emitter: this._emitter
+    });
+    if (node) {
+      this._emitter.emit({
+        event: GraphEvents.NODE_LOADED,
+        payload: {node}
+      });
     } else {
-      this._emitter.emit(GraphEvents.NODE_NOT_FOUND, nid);
+      this._emitter.emit({
+        event: GraphEvents.NODE_NOT_FOUND,
+        payload: {nid}
+      });
     }
   }
 

@@ -53,6 +53,9 @@ export async function findNode<NodeValueType>(nid: string, emitter: Emitter): Pr
       .once(GraphEvents.NODE_NOT_FOUND, (id: string) => {
         reject(new NodeNotFoundError(id));
       })
-      .emit(GraphEvents.NODE_LOAD, nid);
+      .emit({
+        event: GraphEvents.NODE_LOAD,
+        payload: {nid}
+      });
   });
 }

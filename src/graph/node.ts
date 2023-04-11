@@ -52,7 +52,8 @@ export class Node<NodeValueType> {
     this._emitter.on(GraphEvents.NODE_UPDATED, this.onNodeUpdated.bind(this));
   }
 
-  private onNodeUpdated(node: Node<NodeValueType>): void {
+  private onNodeUpdated(payload: {node: Node<NodeValueType>}): void {
+    const {node} = payload;
     if (node.nid === this._nid) {
       this._updateNodeData(node);
     }
@@ -60,11 +61,17 @@ export class Node<NodeValueType> {
 
   public async update(): Promise<void> {
     const event = this._loaded ? GraphEvents.NODE_UPDATE : GraphEvents.NODE_LOAD;
-    this._emitter.emit(event, this._nid);
+    this._emitter.emit({
+      event,
+      payload: {nid: this._nid}
+    });
 
     if (this._loaded) return;
 
-    const node = await Node.find<NodeValueType>(this._nid, this._emitter);
+    const node = await Node.find<NodeValueType>({
+      nid: this._nid,
+      emitter: this._emitter
+    });
     if (node) {
       this._updateNodeData(node);
     }
@@ -77,9 +84,13 @@ export class Node<NodeValueType> {
     this._loaded = true;
   }
 
-  public async add<EdgeNodeValueType>(label: string, node: Node<EdgeNodeValueType>): Promise<void> {
+  public async add<EdgeNodeValueType>(input: {label: string, node: Node<EdgeNodeValueType>}): Promise<void> {
+    const {label, node} = input;
     this._edges!.set(label, node);
-    this._emitter.emit(GraphEvents.NODE_UPDATED, this);
+    this._emitter.emit({
+      event: GraphEvents.NODE_UPDATED,
+      payload: {node: this}
+    });
   }
 
   public async edge<EdgeNodeValueType>(label: string): Promise<Maybe<Node<EdgeNodeValueType>>> {
@@ -90,8 +101,11 @@ export class Node<NodeValueType> {
     return node;
   }
 
-  public static create<NodeValueType>(payload: NodeValueType, emitter: Emitter): Node<NodeValueType> {
-    const nid = generateHash(payload);
+  public static create<NodeValueType>(input: {payload: NodeValueType, emitter: Emitter}): Node<NodeValueType> {
+    const {payload, emitter} = input;
+    const nid = generateHash({
+      data: payload
+    });
     const createdAt = new Date();
     const edges = new Map<string, Node<any>>();
     return new Node<NodeValueType>({nid, payload, emitter, createdAt, edges});
@@ -101,11 +115,13 @@ export class Node<NodeValueType> {
     return serializeNode(this);
   }
 
-  public static deserialize<NodeValueType>(serialized: string, emitter: Emitter): Node<NodeValueType> {
+  public static deserialize<NodeValueType>(input: {serialized: string, emitter: Emitter}): Node<NodeValueType> {
+    const {serialized, emitter} = input;
     return deserializeNode(serialized, emitter);
   }
 
-  public static async find<NodeValueType>(nid: string, emitter: Emitter): Promise<Maybe<Node<NodeValueType>>> {
+  public static async find<NodeValueType>(input: {nid: string, emitter: Emitter}): Promise<Maybe<Node<NodeValueType>>> {
+    const {nid, emitter} = input;
     return findNode<NodeValueType>(nid, emitter);
   }
 }

@@ -13,8 +13,8 @@ export class Emitter {
     }
   }
 
-  public emit(event: string, payload: any): Emitter {
-    this.events.emit(event, payload);
+  public emit(input: {event: string, payload: any}): Emitter {
+    this.events.emit(input.event, input.payload);
     return this;
   }
 

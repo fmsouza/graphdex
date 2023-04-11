@@ -1,4 +1,4 @@
-import { NodeClient } from "./src";
+import { NodeClient, generateKeyPair } from "./src";
 import { fs as fsDriver } from "./src/storage/drivers/fs";
 
 (async function main() {
@@ -6,6 +6,9 @@ import { fs as fsDriver } from "./src/storage/drivers/fs";
     appId: 'my-app',
     storage: {
       driver: fsDriver(process.cwd() + '/tmp'),
+    },
+    identity: {
+      keyPair: generateKeyPair()
     }
   });
   
